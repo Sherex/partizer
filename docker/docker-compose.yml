@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+  mongodb:
+    container_name: partizer-mongodb
+    image: mongo:bionic
+    volumes:
+      - ./volumes/db:/data/db
+    ports: 
+      - 27017:27017
+    networks:
+      - mongodb
+
+networks:
+  mongodb:
+    external: false

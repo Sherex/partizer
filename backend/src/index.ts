@@ -1,7 +1,9 @@
-function test(msg?: string) {
-  if (!msg) return false
-  console.log(msg)
-  return true
-}
+import * as db from './db/db'
 
-test('12345')
+db.setup().then(() => {
+  console.log('Done!')
+})
+
+db.getCollections().then(() => {
+  console.log('Done!')
+})

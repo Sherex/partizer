@@ -18,6 +18,12 @@
   "devDependencies": {
     "ts-node-dev": "^1.0.0-pre.50",
     "tslint": "^5.12.1",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3",
+    "@types/mongoose": "^5.7.30"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.9.22",
+    "ts-mongoose": "0.0.21"
   }
 }
