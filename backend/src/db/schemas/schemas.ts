@@ -1,9 +1,9 @@
 import { prop, Ref, getModelForClass, ReturnModelType } from '@typegoose/typegoose'
 import { Connection } from 'mongoose'
 
-class PartSchema {
+class Part {
   @prop({ required: true })
-  public schema_version!: string
+  public _schema_version!: string
 
   @prop({ required: true })
   public name!: string
@@ -28,9 +28,9 @@ class PartRef {
   public amount?: string
 }
 
-class CompartmentSchema {
+class Compartment {
   @prop({ required: true })
-  public schema_version!: string
+  public _schema_version!: string
 
   @prop({ required: true })
   public name!: string
@@ -42,9 +42,9 @@ class CompartmentSchema {
   public parts?: Ref<PartRef[]>
 }
 
-class ShelfSchema {
+class Shelf {
   @prop({ required: true })
-  public schema_version!: string
+  public _schema_version!: string
 
   @prop({ required: true })
   public name!: string
@@ -52,13 +52,13 @@ class ShelfSchema {
   @prop()
   public description?: string
 
-  @prop({ ref: CompartmentSchema })
-  public compartments?: Ref<CompartmentSchema[]>
+  @prop({ ref: Compartment })
+  public compartments?: Ref<Compartment[]>
 }
 
-class StorageLocationSchema {
+class StorageLocation {
   @prop({ required: true })
-  public schema_version!: string
+  public _schema_version!: string
 
   @prop({ required: true })
   public name!: string
@@ -69,18 +69,25 @@ class StorageLocationSchema {
   @prop()
   public description?: string
 
-  @prop({ ref: ShelfSchema })
-  public shelves?: Ref<ShelfSchema[]>
+  @prop({ ref: Shelf })
+  public shelves?: Ref<Shelf[]>
 }
 
-interface Models {
-  Part: ReturnModelType<typeof PartSchema, {}>
-  StorageLocation: ReturnModelType<typeof StorageLocationSchema, {}>
+export {
+  Part,
+  StorageLocation,
+  Shelf,
+  Compartment
+}
+
+export interface Models {
+  Part: ReturnModelType<typeof Part, {}>
+  StorageLocation: ReturnModelType<typeof StorageLocation, {}>
 }
 
 export function getModels (connection: Connection): Models {
   return {
-    Part: getModelForClass(PartSchema, { existingConnection: connection }),
-    StorageLocation: getModelForClass(StorageLocationSchema, { existingConnection: connection })
+    Part: getModelForClass(Part, { existingConnection: connection }),
+    StorageLocation: getModelForClass(StorageLocation, { existingConnection: connection })
   }
 }
