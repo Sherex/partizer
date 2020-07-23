@@ -2,7 +2,7 @@
   "name": "backend-partizer",
   "private": true,
   "version": "0.1.0",
-  "description": "",
+  "description": "A simple organizer for electronics",
   "main": "dist/index.js",
   "files": [
     "dist/"
@@ -15,7 +15,7 @@
     "test": "npm run lint"
   },
   "keywords": [],
-  "author": "",
+  "author": "Ingar Helgesen (https://github.com/sherex)",
   "license": "MIT",
   "devDependencies": {
     "@types/mongoose": "^5.7.30",
