@@ -2,16 +2,17 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const config = {
-  dbConnString: requiredEnv('DB_CONN_STRING'),
-  dbName: process.env.DB_NAME || 'partizer'
+  dbConnString: env('DB_CONN_STRING'),
+  dbName: env('DB_NAME', 'partizer')
 }
 
 export {
   config
 }
 
-function requiredEnv(env: string) {
+function env (env: string, defaultValue?: string): string {
   const value = process.env[env]
   if (typeof value === 'string') return value
+  if (typeof defaultValue === 'string') return defaultValue
   throw Error(`Missing required environment variable "${env}"!`)
 }

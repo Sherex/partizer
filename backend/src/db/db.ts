@@ -7,15 +7,14 @@ const db = mongoose.createConnection(config.dbConnString, {
   dbName: config.dbName
 })
 
-async function setup () {
+async function setup (): Promise<void> {
   await db.createCollection('parts')
   console.log(db.collections)
 }
 
-async function getCollections () {
+async function getCollections (): Promise<void> {
   console.log(await db.collection('parts'))
 }
-
 
 export {
   setup,
