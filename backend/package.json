@@ -30,8 +30,8 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
+    "@typegoose/typegoose": "^7.3.0",
     "dotenv": "^8.2.0",
-    "mongoose": "^5.9.25",
-    "ts-mongoose": "0.0.21"
+    "mongoose": "^5.9.25"
   }
 }

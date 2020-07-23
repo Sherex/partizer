@@ -1,39 +1,86 @@
-import { createSchema, typedModel, Type } from 'ts-mongoose'
+import { prop, Ref, getModelForClass, ReturnModelType } from '@typegoose/typegoose'
+import { Connection } from 'mongoose'
 
-const PartSchema = createSchema({
-  name: Type.string({ required: true }),
-  model: Type.string(),
-  description: Type.string(),
-  attachments: Type.array().of({
-    fileId: Type.string({ required: true }),
-    name: Type.string({ required: true }),
-    type: Type.string({ required: true })
-  })
-})
+class PartSchema {
+  @prop({ required: true })
+  public schema_version!: string
 
-const CompartmentSchema = createSchema({
-  name: Type.string({ required: true }),
-  description: Type.string(),
-  parts: Type.array().of({
-    partId: Type.string({ required: true }),
-    amount: Type.number()
-  })
-})
+  @prop({ required: true })
+  public name!: string
 
-const ShelfSchema = createSchema({
-  name: Type.string({ required: true }),
-  description: Type.string(),
-  compartments: Type.array().of(CompartmentSchema)
-})
+  @prop()
+  public model?: string
 
-const StorageLocationSchema = createSchema({
-  name: Type.string({ required: true }),
-  address: Type.string(),
-  shelves: Type.array().of(ShelfSchema)
-})
+  @prop()
+  public description?: string
 
-function getModels (connection?) {
+  @prop()
+  public attributes?: [
+    { [key: string]: string }
+  ]
+}
+
+class PartRef {
+  @prop({ required: true })
+  public partId!: string
+
+  @prop()
+  public amount?: string
+}
+
+class CompartmentSchema {
+  @prop({ required: true })
+  public schema_version!: string
+
+  @prop({ required: true })
+  public name!: string
+
+  @prop()
+  public description?: string
+
+  @prop({ ref: PartRef })
+  public parts?: Ref<PartRef[]>
+}
+
+class ShelfSchema {
+  @prop({ required: true })
+  public schema_version!: string
+
+  @prop({ required: true })
+  public name!: string
+
+  @prop()
+  public description?: string
+
+  @prop({ ref: CompartmentSchema })
+  public compartments?: Ref<CompartmentSchema[]>
+}
+
+class StorageLocationSchema {
+  @prop({ required: true })
+  public schema_version!: string
+
+  @prop({ required: true })
+  public name!: string
+
+  @prop()
+  public address?: string
+
+  @prop()
+  public description?: string
+
+  @prop({ ref: ShelfSchema })
+  public shelves?: Ref<ShelfSchema[]>
+}
+
+interface Models {
+  Part: ReturnModelType<typeof PartSchema, {}>
+  StorageLocation: ReturnModelType<typeof StorageLocationSchema, {}>
+}
+
+export function getModels (connection: Connection): Models {
   return {
-    Part: typedModel('Part', PartSchema, undefined, undefined, {}, connection)
+    Part: getModelForClass(PartSchema, { existingConnection: connection }),
+    StorageLocation: getModelForClass(StorageLocationSchema, { existingConnection: connection })
   }
 }
