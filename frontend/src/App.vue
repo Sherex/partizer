@@ -34,6 +34,8 @@
     </v-app-bar>
 
     <v-main>
+      <v-breadcrumbs divider="/" :items="breadcrumbs()">
+      </v-breadcrumbs>
       <router-view/>
     </v-main>
 
@@ -52,6 +54,11 @@ export default class App extends Vue {
 
   created () {
     this.$vuetify.theme.dark = true
+  }
+
+  breadcrumbs () {
+    const path = this.$router.currentRoute.fullPath.split('/')
+    return path.map(entry => ({ text: entry }))
   }
 }
 </script>
