@@ -22,8 +22,8 @@ export default class Parts extends Vue {
       name: 'NE555',
       description: 'A 555 timer',
       attributes: {
-        cool: 'story',
-        stuff: 'yay'
+        maxInputCurrent: '200mA',
+        maxSupplyVoltage: '3.3V'
       }
     },
     {
@@ -31,8 +31,8 @@ export default class Parts extends Vue {
       name: 'MAX0101',
       description: 'A part',
       attributes: {
-        cool: 'story',
-        stuff: 'yay'
+        resolution: '10 bit',
+        channels: '2CH'
       }
     },
     {
@@ -40,8 +40,8 @@ export default class Parts extends Vue {
       name: 'Atmega 328p',
       description: 'A microcontroller',
       attributes: {
-        cool: 'story',
-        stuff: 'yay'
+        adcResolution: '10 bit',
+        ioPins: '10'
       }
     }
   ]
