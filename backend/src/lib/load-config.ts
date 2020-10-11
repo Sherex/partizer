@@ -2,8 +2,10 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const config = {
-  dbConnString: env('DB_CONN_STRING'),
-  dbName: env('DB_NAME', 'partizer')
+  dbHost: env('DB_HOST', 'localhost:5432'),
+  dbName: env('DB_NAME', 'partizer'),
+  dbUser: env('DB_USER', 'partizer'),
+  dbPass: env('DB_PASS', 'partizer_dev_pass')
 }
 
 export {
