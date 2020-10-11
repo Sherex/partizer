@@ -1,15 +1,23 @@
 version: "3.7"
 services:
-  mongodb:
-    container_name: partizer-mongodb
-    image: mongo:bionic
+  postgresql:
+    container_name: partizer-db
+    image: postgres:13.0
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=partizer
+      - POSTGRES_USER=partizer
+      - POSTGRES_PASSWORD=partizer_dev_pass
     volumes:
-      - ./volumes/db:/data/db
-    ports: 
-      - 27017:27017
+      - "./volumes/db:/var/lib/postgresql/data"
     networks:
-      - mongodb
+      - db
+    healthcheck:
+      test: ["CMD", "pg_isready -U ${POSTGRES_USER}"]
+      timeout: 5s
+      retries: 3
 
 networks:
-  mongodb:
+  db:
     external: false
