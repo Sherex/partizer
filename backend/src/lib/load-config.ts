@@ -2,7 +2,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const config = {
-  dbHost: env('DB_HOST', 'localhost:5432'),
+  dbHost: env('DB_HOST', 'localhost'),
+  dbPort: parseInt(env('DB_PORT', '5432')),
   dbName: env('DB_NAME', 'partizer'),
   dbUser: env('DB_USER', 'partizer'),
   dbPass: env('DB_PASS', 'partizer_dev_pass')
