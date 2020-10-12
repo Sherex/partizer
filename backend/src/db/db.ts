@@ -1,46 +1,68 @@
-import mongoose from 'mongoose'
 import { config } from '../lib/load-config'
-import { getModels, Part } from './schemas/schemas'
+import { logger } from '@vtfk/logger'
+import { Pool, PoolClient } from 'pg'
+import format from 'pg-format'
+import { readFileSync } from 'fs'
 
-const db = mongoose.createConnection(config.dbConnString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  dbName: config.dbName
-})
+export { format }
 
-export const models = getModels(db)
+let pool: Pool | null = null
+
+function connect (): Pool {
+  if (pool !== null) return pool
+  pool = new Pool({
+    user: config.dbUser,
+    host: config.dbHost,
+    port: config.dbPort,
+    database: config.dbName,
+    password: config.dbPass
+  })
+  return pool
+}
+
+export async function getClient (): Promise<PoolClient> {
+  const pool = connect()
+  return await pool.connect()
+}
 
 export async function setup (): Promise<void> {
-  await db.createCollection('parts')
+  const pool = connect()
+  const dbSchemaQuery = readFileSync('./src/db/sql/schema.sql', 'utf8')
+  try {
+    await pool.query(dbSchemaQuery)
+    logger('info', ['db', 'setup', 'successfully created tables'])
+  } catch (error) {
+    if (/database.*does not exist/.test(error.message)) {
+      logger('error', ['db', 'setup', 'database does not exist', 'db name', config.dbName])
+    }
+    logger('error', ['db', 'setup', 'failed to setup database', 'throwing'])
+    throw error
+  }
+  await close()
 }
 
-interface CollectionObject {
-  [index: string]: mongoose.Collection
+interface CloseOptions {
+  immediate?: boolean
 }
 
-export async function getCollections (): Promise<CollectionObject> {
-  return db.collections
-}
-
-interface PartInput {
-  name: string
-  description?: string
-  attributes?: [
-    { [key: string]: string }
-  ]
-}
-
-export async function addPart (part: PartInput): Promise<Part> {
-  const newPart = await models.Part.create({
-    _schema_version: '0.1.0',
-    name: part.name,
-    description: part.description,
-    attributes: part.attributes
-  })
-  return newPart.toObject({ minimize: false }) as Part
-}
-
-export async function getParts (query?: mongoose.MongooseFilterQuery<Part>): Promise<Part[]> {
-  const parts = await models.Part.find()
-  return parts as Part[]
+let connectionCloseTimer: NodeJS.Timeout
+export async function close (options?: CloseOptions): Promise<void> {
+  if (typeof connectionCloseTimer !== 'undefined') {
+    clearTimeout(connectionCloseTimer)
+  }
+  if (options?.immediate === true) {
+    logger('silly', ['db', 'close', 'connection close immediate', 'closing connection'])
+    if (pool === null) return
+    await pool.end()
+    pool = null
+  } else {
+    logger('silly', ['db', 'close', 'setting connection close timeout'])
+    connectionCloseTimer = setTimeout(() => {
+      logger('silly', ['db', 'close', 'connection closing after timeout', 'closing connection'])
+      if (pool === null) return
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      pool.end()
+      pool = null
+    }, 2000)
+  }
 }
